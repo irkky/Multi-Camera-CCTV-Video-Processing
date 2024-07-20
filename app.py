@@ -10,25 +10,25 @@ import tensorflow_hub as hub
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Load the pre-trained model from TensorFlow Hub
+# Loading the pre-trained model
 MODEL_URL = "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2"
 detector = hub.load(MODEL_URL)
 
 def detect_persons(frame):
     # Convert frame to tensor
     tensor = tf.convert_to_tensor(frame)
-    tensor = tensor[tf.newaxis, ...]  # Add batch dimension
+    tensor = tensor[tf.newaxis, ...]
 
-    # Perform detection
+    # Performing detection
     result = detector(tensor)
     result = {key: value.numpy() for key, value in result.items()}
 
-    # Extract detection results
+    # Extracting detection results
     detection_classes = result["detection_classes"]
     detection_scores = result["detection_scores"]
     detection_boxes = result["detection_boxes"]
 
-    # Filter results for person class (class ID 1)
+    # Filter results for person class
     person_detections = []
     for i in range(detection_classes.shape[1]):  # Assuming the second dimension represents detections
         if detection_classes[0, i] == 1 and detection_scores[0, i] >= 0.5:
@@ -58,7 +58,7 @@ def process_video_feed(video_file, output_file, duration=2000):
         if not ret:
             break
 
-        # Detect persons using the pre-trained model
+        # Detecting persons
         person_detections = detect_persons(frame)
 
         # Draw bounding boxes
@@ -67,10 +67,10 @@ def process_video_feed(video_file, output_file, duration=2000):
             x1, y1, x2, y2 = int(x1 * frame.shape[1]), int(y1 * frame.shape[0]), int(x2 * frame.shape[1]), int(y2 * frame.shape[0])
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-        # Convert to grayscale
+        # Converting to grayscale
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Write the frame
+        # Writing the frame
         out.write(gray_frame)
 
         # Log FPS
@@ -95,16 +95,16 @@ def process_multiple_feeds(video_files, output_files):
 if __name__ == "__main__":
     # Placeholder video files (replace with actual RTSP URLs or video file paths)
     video_files = [
-        "D:/Computer vision/videos/video1.mp4",  # Change this to the path of your first video file
-        "D:/Computer vision/videos/video2.mp4",  # Change this to the path of your second video file
-        "D:/Computer vision/videos/video3.mp4"   # Change this to the path of your third video file
+        "D:/Computer vision/videos/video1.mp4",
+        "D:/Computer vision/videos/video2.mp4",
+        "D:/Computer vision/videos/video3.mp4"
     ]
     
     # Output files (specify where you want to save the processed videos)
     output_files = [
-        "D:/Computer vision/output/output1.mp4",  # Change this to the desired path for the first output file
-        "D:/Computer vision/output/output2.mp4",  # Change this to the desired path for the second output file
-        "D:/Computer vision/output/output3.mp4"   # Change this to the desired path for the third output file
+        "D:/Computer vision/output/output1.mp4",
+        "D:/Computer vision/output/output2.mp4",
+        "D:/Computer vision/output/output3.mp4"
     ]
 
     # Ensure output directory exists
